@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Refugio's Lanche</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 600px;
+        }
+        h1 { font-size: 3em; margin-bottom: 20px; }
+        button {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover { transform: scale(1.05); }
+        #result {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: rgba(76, 175, 80, 0.3); }
+        .error { background: rgba(244, 67, 54, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍔 Refugio's Lanche</h1>
+        <h2>Página de Diagnóstico</h2>
+        
+        <button onclick="testBackend()">Testar Backend</button>
+        <button onclick="testProducts()">Testar Produtos</button>
+        <button onclick="goToApp()">Ir para App</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const result = document.getElementById('result');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            result.insertBefore(div, result.firstChild);
+        }
+
+        async function testBackend() {
+            log('🔍 Testando conexão com Backend...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000');
+                const data = await response.json();
+                log(`✅ Backend Online: ${JSON.stringify(data)}`, 'success');
+            } catch (error) {
+                log(`❌ Erro no Backend: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProducts() {
+            log('📦 Carregando produtos...', 'info');
+            try {
+                const response = await fetch('http://localhost:5000/api/products');
+                const data = await response.json();
+                log(`✅ Produtos carregados: ${data.count} produtos`, 'success');
+                log(`<pre>${JSON.stringify(data.data.slice(0, 2), null, 2)}</pre>`, 'info');
+            } catch (error) {
+                log(`❌ Erro ao carregar produtos: ${error.message}`, 'error');
+            }
+        }
+
+        function goToApp() {
+            window.location.href = '/';
+        }
+
+        // Teste automático ao carregar
+        window.onload = () => {
+            log('🎉 Página de teste carregada!', 'success');
+            testBackend();
+        };
+    </script>
+</body>
+</html>
