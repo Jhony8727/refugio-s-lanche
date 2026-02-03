@@ -1,0 +1,23 @@
+{
+  "name": "refugio-lanche-backend",
+  "version": "1.0.0",
+  "description": "Backend para Refugio's Lanche",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/seed.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": ["lanches", "refugio"],
+  "author": "Jhony",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
