@@ -86,98 +86,133 @@ const HomePage = () => {
       </div>
       
       {/* Hero Section Moderno - Responsivo */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 pt-[190px] sm:pt-[240px] md:pt-[370px] lg:pt-[490px] pb-6 md:pb-8 -mt-4">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-200 via-yellow-100 to-amber-200 pt-[190px] sm:pt-[240px] md:pt-[370px] lg:pt-[490px] pb-6 md:pb-8 -mt-4">
         {/* Elementos decorativos flutuantes */}
         <motion.div
-          className="absolute top-20 left-2 sm:left-10 text-4xl sm:text-6xl md:text-8xl opacity-20 md:opacity-30"
+          className="absolute top-20 left-2 sm:left-10 text-4xl sm:text-6xl md:text-8xl opacity-75 md:opacity-85"
           animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
           🍔
         </motion.div>
         <motion.div
-          className="absolute top-40 right-2 sm:right-20 text-3xl sm:text-5xl md:text-7xl opacity-20 md:opacity-30"
+          className="absolute top-40 right-2 sm:right-20 text-3xl sm:text-5xl md:text-7xl opacity-75 md:opacity-85"
           animate={{ y: [0, 20, 0], rotate: [0, -5, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
           🍟
         </motion.div>
         <motion.div
-          className="hidden md:block absolute bottom-40 left-1/4 text-6xl opacity-30"
+          className="hidden md:block absolute bottom-40 left-1/4 text-6xl opacity-85"
           animate={{ y: [0, -15, 0], rotate: [0, 10, 0] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         >
           🥤
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-60 left-1/3 text-7xl opacity-25"
+          className="hidden md:block absolute top-60 left-1/3 text-7xl opacity-80"
           animate={{ y: [0, 15, 0], rotate: [0, -8, 0] }}
           transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
         >
           🍕
         </motion.div>
         <motion.div
-          className="hidden md:block absolute bottom-20 right-1/4 text-6xl opacity-25"
+          className="hidden md:block absolute bottom-20 right-1/4 text-6xl opacity-80"
           animate={{ y: [0, -18, 0], rotate: [0, 7, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
         >
           🌮
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-1/3 right-10 text-5xl opacity-25"
+          className="hidden md:block absolute top-1/3 right-10 text-5xl opacity-80"
           animate={{ y: [0, 12, 0], rotate: [0, -6, 0] }}
           transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
         >
           🍰
         </motion.div>
         <motion.div
-          className="hidden md:block absolute bottom-60 left-20 text-6xl opacity-25"
+          className="hidden md:block absolute bottom-60 left-20 text-6xl opacity-80"
           animate={{ y: [0, -10, 0], rotate: [0, 9, 0] }}
           transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
         >
           🥗
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-32 right-1/3 text-7xl opacity-30"
+          className="hidden md:block absolute top-32 right-1/3 text-7xl opacity-85"
           animate={{ y: [0, -25, 0], rotate: [0, 12, 0] }}
           transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
         >
           🌭
         </motion.div>
         <motion.div
-          className="hidden md:block absolute bottom-32 right-16 text-6xl opacity-25"
+          className="hidden md:block absolute bottom-32 right-16 text-6xl opacity-80"
           animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
           transition={{ duration: 5.3, repeat: Infinity, ease: "easeInOut" }}
         >
           🍿
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-48 left-1/2 text-5xl opacity-20"
+          className="hidden md:block absolute top-48 left-1/2 text-5xl opacity-75"
           animate={{ y: [0, 15, 0], rotate: [0, 8, 0] }}
           transition={{ duration: 6.2, repeat: Infinity, ease: "easeInOut" }}
         >
           🥙
         </motion.div>
         <motion.div
-          className="hidden md:block absolute bottom-48 left-1/3 text-6xl opacity-25"
+          className="hidden md:block absolute bottom-48 left-1/3 text-6xl opacity-80"
           animate={{ y: [0, -12, 0], rotate: [0, -7, 0] }}
           transition={{ duration: 5.7, repeat: Infinity, ease: "easeInOut" }}
         >
           🍩
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-2/3 right-1/4 text-7xl opacity-30"
+          className="hidden md:block absolute top-2/3 right-1/4 text-7xl opacity-85"
           animate={{ y: [0, 18, 0], rotate: [0, 11, 0] }}
           transition={{ duration: 4.3, repeat: Infinity, ease: "easeInOut" }}
         >
           🧁
         </motion.div>
         <motion.div
-          className="hidden md:block absolute top-1/2 left-16 text-6xl opacity-25"
+          className="hidden md:block absolute top-1/2 left-16 text-6xl opacity-80"
           animate={{ y: [0, -14, 0], rotate: [0, -9, 0] }}
           transition={{ duration: 5.9, repeat: Infinity, ease: "easeInOut" }}
         >
           🥪
+        </motion.div>
+        <motion.div
+          className="hidden md:block absolute bottom-20 left-1/3 text-6xl opacity-75"
+          animate={{ y: [0, -16, 0], rotate: [0, 6, 0] }}
+          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍪
+        </motion.div>
+        <motion.div
+          className="hidden md:block absolute top-1/4 left-10 text-5xl opacity-70"
+          animate={{ y: [0, 12, 0], rotate: [0, -7, 0] }}
+          transition={{ duration: 6.3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🥨
+        </motion.div>
+        <motion.div
+          className="hidden md:block absolute bottom-1/4 right-10 text-7xl opacity-80"
+          animate={{ y: [0, -20, 0], rotate: [0, 8, 0] }}
+          transition={{ duration: 4.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍦
+        </motion.div>
+        <motion.div
+          className="hidden md:block absolute top-1/2 right-1/3 text-6xl opacity-75"
+          animate={{ y: [0, 14, 0], rotate: [0, -9, 0] }}
+          transition={{ duration: 5.8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🥤
+        </motion.div>
+        <motion.div
+          className="hidden md:block absolute bottom-1/3 left-1/4 text-5xl opacity-70"
+          animate={{ y: [0, -11, 0], rotate: [0, 5, 0] }}
+          transition={{ duration: 6.1, repeat: Infinity, ease: "easeInOut" }}
+        >
+          🍨
         </motion.div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -376,9 +411,9 @@ const HomePage = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 text-white rounded-t-3xl md:rounded-t-3xl shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 px-4 sm:px-6 md:px-8 py-4 md:py-6 flex items-center justify-between md:justify-start gap-3 md:gap-4 touch-manipulation">
+          <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600 text-white rounded-t-3xl md:rounded-t-3xl shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 px-8 sm:px-10 md:px-16 py-4 md:py-6 flex items-center justify-between md:justify-start gap-5 md:gap-8 touch-manipulation">
             <div className="relative">
-              <FaShoppingBag size={28} className="md:w-8 md:h-8" />
+              <FaShoppingBag size={32} className="md:w-10 md:h-10" />
               {itemCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
@@ -408,7 +443,7 @@ const HomePage = () => {
             >
               <style>{`
                 @media (min-width: 768px) {
-                  .absolute.bottom-full { width: 420px !important; }
+                  .absolute.bottom-full { width: 600px !important; }
                 }
               `}</style>
               {/* Header do Carrinho */}

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './models/Product.js';
 import Admin from './models/Admin.js';
+import Order from './models/Order.js';
 
 dotenv.config();
 
@@ -108,6 +109,7 @@ const seedDatabase = async () => {
     // Limpar dados existentes
     await Product.deleteMany({});
     await Admin.deleteMany({});
+    await Order.deleteMany({});
     console.log('🗑️  Dados antigos removidos');
 
     // Inserir produtos

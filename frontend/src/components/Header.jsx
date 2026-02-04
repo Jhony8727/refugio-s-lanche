@@ -4,15 +4,15 @@ import { motion } from 'framer-motion';
 
 const Header = ({ showAdminIcon = false }) => {
   return (
-    <header className="bg-white shadow-lg relative z-40 border-b-4 border-orange-500">
+    <header className="bg-white shadow-lg relative z-[60] border-b-4 border-orange-500">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-end items-center">
             {showAdminIcon && (
-              <Link to="/admin/login">
+              <Link to="/admin/login" className="relative z-[61]">
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
                   whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-br from-orange-500 to-amber-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:shadow-orange-500/50 transition-all duration-300"
+                  className="bg-gradient-to-br from-orange-500 to-amber-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:shadow-orange-500/50 transition-all duration-300 cursor-pointer"
                 >
                   <FaUserShield size={20} />
                 </motion.div>

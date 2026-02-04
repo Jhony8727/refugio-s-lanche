@@ -17,6 +17,7 @@ const AdminDashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [expandedOrders, setExpandedOrders] = useState({});
   const [productForm, setProductForm] = useState({
     name: '',
     description: '',
@@ -77,12 +78,43 @@ const AdminDashboardPage = () => {
       
       setLastOrderCount(currentOrderCount);
       setNewOrdersCount(currentOrderCount);
-      setOrders(ordersData);
-      setStats(statsData);
-      setProducts(productsData);
+      setOrders(ordersData || []);
+      
+      // Garantir que stats tenha a estrutura correta
+      const defaultStats = {
+        today: { orders: 0, revenue: 0 },
+        month: { orders: 0, revenue: 0 },
+        total: { orders: 0, revenue: 0 }
+      };
+      
+      setStats({
+        today: { 
+          orders: statsData?.today?.orders || 0, 
+          revenue: statsData?.today?.revenue || 0 
+        },
+        month: { 
+          orders: statsData?.month?.orders || 0, 
+          revenue: statsData?.month?.revenue || 0 
+        },
+        total: { 
+          orders: statsData?.total?.orders || 0, 
+          revenue: statsData?.total?.revenue || 0 
+        }
+      });
+      
+      setProducts(productsData || []);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       toast.error('Erro ao carregar dados');
+      
+      // Definir valores padrão em caso de erro
+      setOrders([]);
+      setStats({
+        today: { orders: 0, revenue: 0 },
+        month: { orders: 0, revenue: 0 },
+        total: { orders: 0, revenue: 0 }
+      });
+      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -217,8 +249,16 @@ const AdminDashboardPage = () => {
       return ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
     }
     
-    // Para pedidos com entrega, mostrar todos os status
-    return ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered'];
+    // Para entregas, mostrar todos os status
+    return ['pending', 'confirmed', 'preparing', 'delivering', 'delivered'];
+  };
+
+  // Função para alternar expansão do pedido
+  const toggleOrderExpansion = (orderId) => {
+    setExpandedOrders(prev => ({
+      ...prev,
+      [orderId]: !prev[orderId]
+    }));
   };
   
   const statusOptions = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered'];
@@ -349,7 +389,7 @@ const AdminDashboardPage = () => {
             >
               <FaDollarSign className="text-3xl text-green-500 mb-2" />
               <p className="text-gray-600">Faturamento Hoje</p>
-              <p className="text-3xl font-bold">R$ {stats.today.revenue.toFixed(2)}</p>
+              <p className="text-3xl font-bold">R$ {(stats.today.revenue || 0).toFixed(2)}</p>
             </motion.div>
 
             <motion.div
@@ -381,61 +421,126 @@ const AdminDashboardPage = () => {
           <div className="bg-white rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-bold mb-6">Pedidos Recentes</h2>
             
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Pedido</th>
-                    <th className="px-4 py-3 text-left">Cliente</th>
-                    <th className="px-4 py-3 text-left">Tipo</th>
-                    <th className="px-4 py-3 text-left">Total</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => {
-                    const hasAddress = order.customer?.address?.street;
-                    const availableStatuses = getAvailableStatuses(order);
-                    
-                    return (
-                      <tr key={order._id} className="border-b hover:bg-gray-50">
-                        <td className="px-4 py-4 font-bold">{order.orderNumber}</td>
-                        <td className="px-4 py-4">{order.customer.name}</td>
-                        <td className="px-4 py-4">
-                          {hasAddress ? (
-                            <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 flex items-center gap-1 w-fit">
-                              🚚 Entrega
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 flex items-center gap-1 w-fit">
-                              🏪 Local
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-4 font-semibold text-primary">R$ {order.total.toFixed(2)}</td>
-                        <td className="px-4 py-4">
-                          <span className={`px-3 py-1 rounded-full text-sm ${statusColors[order.orderStatus]}`}>
-                            {statusLabels[order.orderStatus]}
+            {!orders || orders.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">Nenhum pedido encontrado</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {orders.map((order) => {
+                if (!order) return null;
+                
+                const hasAddress = order.customer?.address?.street;
+                const availableStatuses = getAvailableStatuses(order);
+                const isExpanded = expandedOrders[order._id];
+                
+                return (
+                  <div key={order._id} className="border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg transition">
+                    {/* Cabeçalho compacto - sempre visível */}
+                    <div 
+                      className="flex flex-wrap justify-between items-center gap-4 cursor-pointer"
+                      onClick={() => toggleOrderExpansion(order._id)}
+                    >
+                      <div className="flex items-center gap-4">
+                        <h3 className="text-xl font-bold text-orange-600">#{order.orderNumber || 'N/A'}</h3>
+                        <div>
+                          <p className="font-semibold text-gray-800">{order.customer?.name || 'Não informado'}</p>
+                          <p className="text-sm text-gray-600">{order.customer?.phone || 'Não informado'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-3">
+                        {hasAddress ? (
+                          <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 flex items-center gap-1">
+                            🚚 Entrega
                           </span>
-                        </td>
-                        <td className="px-4 py-4">
-                          <select
-                            value={order.orderStatus}
-                            onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                            className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
-                          >
-                            {availableStatuses.map(status => (
-                              <option key={status} value={status}>{statusLabels[status]}</option>
+                        ) : (
+                          <span className="px-3 py-1 rounded-full text-sm bg-green-100 text-green-800 flex items-center gap-1">
+                            🏪 Local
+                          </span>
+                        )}
+                        <span className={`px-3 py-1 rounded-full text-sm ${statusColors[order.orderStatus] || 'bg-gray-100 text-gray-800'}`}>
+                          {statusLabels[order.orderStatus] || order.orderStatus || 'Desconhecido'}
+                        </span>
+                        <p className="text-lg font-bold text-orange-600">R$ {(order.total || 0).toFixed(2)}</p>
+                        <button className="text-gray-500 hover:text-gray-700 text-xl">
+                          {isExpanded ? '▼' : '▶'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Detalhes expandidos - só aparecem quando expandido */}
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t space-y-4">
+                        {/* Endereço de entrega (se aplicável) */}
+                        {hasAddress && (
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <h4 className="font-bold text-gray-700 mb-2">📍 Endereço de Entrega:</h4>
+                            <p className="text-gray-600">
+                              {order.customer.address.street}, {order.customer.address.number}
+                              {order.customer.address.complement && ` - ${order.customer.address.complement}`}
+                            </p>
+                            <p className="text-gray-600">
+                              {order.customer.address.neighborhood} - {order.customer.address.city}/{order.customer.address.state}
+                            </p>
+                            <p className="text-gray-600">CEP: {order.customer.address.zipCode}</p>
+                          </div>
+                        )}
+
+                        {/* Produtos do pedido */}
+                        <div>
+                          <h4 className="font-bold text-gray-700 mb-2">🍔 Itens do Pedido:</h4>
+                          <div className="space-y-2">
+                            {order.items && order.items.map((item, index) => (
+                              <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                <div className="flex-1">
+                                  <p className="font-semibold">{item.product?.name || 'Produto não encontrado'}</p>
+                                  <p className="text-sm text-gray-600">Quantidade: {item.quantity || 0}x</p>
+                                </div>
+                                <p className="font-bold text-orange-600">R$ {((item.price || 0) * (item.quantity || 0)).toFixed(2)}</p>
+                              </div>
                             ))}
-                          </select>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </div>
+                        </div>
+
+                        {/* Observações */}
+                        {order.notes && (
+                          <div className="p-3 bg-yellow-50 rounded-lg">
+                            <h4 className="font-bold text-gray-700 mb-1">📝 Observações:</h4>
+                            <p className="text-gray-700">{order.notes}</p>
+                          </div>
+                        )}
+
+                        {/* Totais e ações */}
+                        <div className="flex flex-wrap justify-between items-center gap-4 pt-4 border-t">
+                          <div>
+                            <p className="text-gray-600">Subtotal: R$ {(order.subtotal || 0).toFixed(2)}</p>
+                            <p className="text-gray-600">Taxa de Entrega: R$ {(order.deliveryFee || 0).toFixed(2)}</p>
+                            <p className="text-xl font-bold text-orange-600">Total: R$ {(order.total || 0).toFixed(2)}</p>
+                            <p className="text-sm text-gray-500">Pagamento: {order.paymentMethod === 'card' ? 'Cartão' : order.paymentMethod === 'pix' ? 'PIX' : order.paymentMethod === 'cash' ? 'Dinheiro' : 'Teste'}</p>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            <label className="font-semibold text-gray-700">Atualizar Status:</label>
+                            <select
+                              value={order.orderStatus || 'pending'}
+                              onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                              className="px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-semibold"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {availableStatuses && availableStatuses.map(status => (
+                                <option key={status} value={status}>{statusLabels[status] || status}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              </div>
+            )}
           </div>
         )}
 
