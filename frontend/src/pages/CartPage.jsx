@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import { FaTrash, FaShoppingCart } from 'react-icons/fa';
+import { FaTrash, FaShoppingCart, FaArrowLeft } from 'react-icons/fa';
 import { removeItem, updateQuantity } from '../store/cartSlice';
 import Header from '../components/Header';
 
@@ -18,7 +18,17 @@ const CartPage = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Meu Carrinho</h1>
+        <div className="flex items-center gap-4 mb-8">
+          <motion.button
+            onClick={() => navigate(-1)}
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-all font-semibold shadow-md"
+          >
+            <FaArrowLeft /> Voltar
+          </motion.button>
+          <h1 className="text-4xl font-bold gradient-text">Meu Carrinho</h1>
+        </div>
 
         {cart.items.length === 0 ? (
           <div className="text-center py-20">

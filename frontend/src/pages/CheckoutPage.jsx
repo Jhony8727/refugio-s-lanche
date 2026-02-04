@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import { FaCreditCard, FaMoneyBillWave, FaShoppingBag, FaQrcode } from 'react-icons/fa';
+import { FaCreditCard, FaMoneyBillWave, FaShoppingBag, FaQrcode, FaArrowLeft } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Header from '../components/Header';
 import { createOrder } from '../services/orderService';
@@ -15,6 +15,7 @@ const CheckoutPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [orderType, setOrderType] = useState('delivery'); // 'delivery' ou 'local'
   
   const [formData, setFormData] = useState({
     name: '',
@@ -30,7 +31,7 @@ const CheckoutPage = () => {
     notes: ''
   });
 
-  const deliveryFee = 5.00;
+  const deliveryFee = orderType === 'delivery' ? 5.00 : 0.00;
   const total = cart.total + deliveryFee;
 
   const handleInputChange = (e) => {
@@ -49,8 +50,13 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (!formData.name || !formData.email || !formData.phone || !formData.street) {
+    if (!formData.name || !formData.phone) {
       toast.error('Preencha todos os campos obrigatórios!');
+      return;
+    }
+
+    if (orderType === 'delivery' && !formData.street) {
+      toast.error('Preencha o endereço de entrega!');
       return;
     }
 
@@ -62,7 +68,7 @@ const CheckoutPage = () => {
           name: formData.name,
           email: formData.email,
           phone: formData.phone,
-          address: {
+          address: orderType === 'delivery' ? {
             street: formData.street,
             number: formData.number,
             complement: formData.complement,
@@ -70,12 +76,13 @@ const CheckoutPage = () => {
             city: formData.city,
             state: formData.state,
             zipCode: formData.zipCode
-          }
+          } : {}
         },
         items: cart.items.map(item => ({
           product: item._id,
           quantity: item.quantity
         })),
+        orderType: orderType,
         paymentMethod: paymentMethod,
         notes: formData.notes
       };
@@ -115,10 +122,65 @@ const CheckoutPage = () => {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 gradient-text">Finalizar Pedido</h1>
+        <div className="flex items-center gap-4 mb-8">
+          <motion.button
+            onClick={() => navigate(-1)}
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-all font-semibold shadow-md"
+          >
+            <FaArrowLeft /> Voltar
+          </motion.button>
+          <h1 className="text-4xl font-bold gradient-text">Finalizar Pedido</h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
+            
+            {/* Tipo de Pedido */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg shadow-md p-6"
+            >
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">Tipo de Pedido</h2>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setOrderType('delivery')}
+                  className={`p-6 border-2 rounded-xl transition-all ${
+                    orderType === 'delivery' 
+                      ? 'border-orange-500 bg-orange-50 shadow-lg scale-105' 
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">🚚</div>
+                  <p className="font-bold text-lg">Entrega</p>
+                  <p className="text-sm text-gray-600 mt-1">Receba em casa</p>
+                  {orderType === 'delivery' && (
+                    <p className="text-xs text-orange-600 font-semibold mt-2">Taxa: R$ 5,00</p>
+                  )}
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setOrderType('local')}
+                  className={`p-6 border-2 rounded-xl transition-all ${
+                    orderType === 'local' 
+                      ? 'border-orange-500 bg-orange-50 shadow-lg scale-105' 
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="text-4xl mb-2">🍽️</div>
+                  <p className="font-bold text-lg">Retirar ou Consumir no Local</p>
+                  <p className="text-sm text-gray-600 mt-1">Busque ou aproveite na loja</p>
+                  {orderType === 'local' && (
+                    <p className="text-xs text-green-600 font-semibold mt-2">Sem taxa de entrega</p>
+                  )}
+                </button>
+              </div>
+            </motion.div>
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -138,15 +200,6 @@ const CheckoutPage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                  <input
-                    type="email" name="email" value={formData.email} onChange={handleInputChange} required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
-                    placeholder="seu@email.com"
-                  />
-                </div>
-                
-                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
                   <input
                     type="tel" name="phone" value={formData.phone} onChange={handleInputChange} required
@@ -157,11 +210,12 @@ const CheckoutPage = () => {
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="bg-white rounded-lg shadow-md p-6"
-            >
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">Endereço de Entrega</h2>
+            {orderType === 'delivery' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                className="bg-white rounded-lg shadow-md p-6"
+              >
+                <h2 className="text-2xl font-bold mb-4 text-gray-800">Endereço de Entrega</h2>
               
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
@@ -210,6 +264,7 @@ const CheckoutPage = () => {
                 </div>
               </div>
             </motion.div>
+            )}
 
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
@@ -217,7 +272,7 @@ const CheckoutPage = () => {
             >
               <h2 className="text-2xl font-bold mb-4 text-gray-800">Forma de Pagamento</h2>
               
-              <div className="grid md:grid-cols-3 gap-4">
+              <div className="grid md:grid-cols-2 gap-4">
                 <button
                   type="button" onClick={() => setPaymentMethod('card')}
                   className={`p-4 border-2 rounded-lg transition-all ${
@@ -236,16 +291,6 @@ const CheckoutPage = () => {
                 >
                   <FaQrcode className="text-3xl mx-auto mb-2 text-primary" />
                   <p className="font-semibold">PIX</p>
-                </button>
-                
-                <button
-                  type="button" onClick={() => setPaymentMethod('cash')}
-                  className={`p-4 border-2 rounded-lg transition-all ${
-                    paymentMethod === 'cash' ? 'border-primary bg-primary/10' : 'border-gray-300'
-                  }`}
-                >
-                  <FaMoneyBillWave className="text-3xl mx-auto mb-2 text-primary" />
-                  <p className="font-semibold">Dinheiro</p>
                 </button>
               </div>
             </motion.div>

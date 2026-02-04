@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaUserShield, FaLock, FaEnvelope } from 'react-icons/fa';
+import { FaUserShield, FaLock, FaEnvelope, FaHome } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import Header from '../components/Header';
 import { login } from '../services/authService';
 
 const AdminLoginPage = () => {
@@ -51,9 +50,7 @@ const AdminLoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <Header />
-      
-      <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[80vh]">
+      <div className="container mx-auto px-4 py-16 flex items-center justify-center min-h-screen">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -64,9 +61,13 @@ const AdminLoginPage = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 200 }}
-              className="inline-block p-4 bg-gradient-to-r from-primary to-primary-dark rounded-full mb-4"
+              className="inline-block -mb-4"
             >
-              <FaUserShield className="text-5xl text-white" />
+              <img 
+                src="/logo.png" 
+                alt="Refugio's Lanche" 
+                className="h-72 w-auto mx-auto"
+              />
             </motion.div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Painel Admin</h1>
             <p className="text-gray-600">Acesse o painel administrativo</p>

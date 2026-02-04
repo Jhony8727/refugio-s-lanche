@@ -71,7 +71,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header showAdminIcon={true} />
       
       {/* Logo Sobreposto */}
       <div className="relative">
@@ -247,14 +247,43 @@ const HomePage = () => {
       {/* Seção de Categorias Modernas */}
       <section className="bg-white pt-8 pb-16 min-h-screen">
         <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl lg:text-5xl font-bold text-center mb-14 text-gray-800"
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14"
           >
-            Explore Nosso Cardápio
-          </motion.h2>
+            <motion.div
+              initial={{ scale: 0.9 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="inline-block"
+            >
+              <h2 className="text-5xl lg:text-6xl font-black mb-4 relative">
+                <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 bg-clip-text text-transparent animate-gradient">
+                  Explore Nosso Cardápio
+                </span>
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="absolute -bottom-2 left-0 h-1.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
+                />
+              </h2>
+            </motion.div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="text-gray-600 text-lg mt-6 max-w-2xl mx-auto"
+            >
+              Delícias preparadas com carinho para você 🍔✨
+            </motion.p>
+          </motion.div>
 
           {/* Filtros de Categoria Redesenhados */}
           <div className="flex justify-center gap-4 mb-6 flex-wrap">

@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaSignOutAlt, FaShoppingBag, FaDollarSign, FaClock, FaCheck, FaBox, FaClipboardList, FaPlus, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
+import { FaSignOutAlt, FaShoppingBag, FaDollarSign, FaClock, FaCheck, FaBox, FaClipboardList, FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaBell } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import Header from '../components/Header';
 import { getAllOrders, getSalesStats, updateOrderStatus } from '../services/orderService';
@@ -26,6 +26,9 @@ const AdminDashboardPage = () => {
     available: true,
     ingredients: ''
   });
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+  const audioRef = useRef(null);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -33,6 +36,13 @@ const AdminDashboardPage = () => {
       return;
     }
     loadData();
+    
+    // Verificar novos pedidos a cada 30 segundos
+    const interval = setInterval(() => {
+      loadData();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadData = async () => {
@@ -42,6 +52,31 @@ const AdminDashboardPage = () => {
         getSalesStats(),
         getAllProducts()
       ]);
+      
+      // Verificar novos pedidos pagos
+      const newPaidOrders = ordersData.filter(order => 
+        order.paymentStatus === 'paid' && 
+        order.status === 'pending'
+      );
+      
+      const currentOrderCount = newPaidOrders.length;
+      
+      // Se houver novos pedidos desde a última verificação
+      if (lastOrderCount > 0 && currentOrderCount > lastOrderCount) {
+        const newOrdersAdded = currentOrderCount - lastOrderCount;
+        toast.success(`🔔 ${newOrdersAdded} novo(s) pedido(s) pago(s) recebido(s)!`, {
+          autoClose: 5000,
+          position: 'top-right'
+        });
+        
+        // Tocar som de notificação
+        if (audioRef.current) {
+          audioRef.current.play().catch(err => console.log('Erro ao tocar som:', err));
+        }
+      }
+      
+      setLastOrderCount(currentOrderCount);
+      setNewOrdersCount(currentOrderCount);
       setOrders(ordersData);
       setStats(statsData);
       setProducts(productsData);
@@ -55,7 +90,6 @@ const AdminDashboardPage = () => {
 
   const handleLogout = () => {
     logout();
-    toast.success('Logout realizado com sucesso!');
     navigate('/admin/login');
   };
 
@@ -149,6 +183,31 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Verificar se é uma imagem
+      if (!file.type.startsWith('image/')) {
+        toast.error('Por favor, selecione um arquivo de imagem');
+        return;
+      }
+      
+      // Verificar tamanho (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('A imagem deve ter no máximo 5MB');
+        return;
+      }
+      
+      // Converter para base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProductForm({ ...productForm, image: reader.result });
+        toast.success('Imagem carregada com sucesso!');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const statusOptions = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered'];
   
   const statusColors = {
@@ -175,9 +234,47 @@ const AdminDashboardPage = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
+      {/* Elemento de áudio para notificação */}
+      <audio ref={audioRef} src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwPUKnk77RgGwU7k9nxy3krBSl+zPLaizsKGGS56+mhUBELTKXh8bllHAU2jdXty3YpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNryy3grBSh+zPDaizsKF2O48OmgUREKSqPg8bllHAU2jdXuy3YpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGgU8lNrxyHYpBSh6yO/eizwLGWe88OihTxAMTqjk8LNfGg==" />
+      
+      {/* Logo no canto esquerdo como botão para página inicial */}
+      <Link to="/" className="fixed top-6 left-6 z-50 group">
+        <motion.div
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.95 }}
+          className="bg-gradient-to-br from-orange-500 to-amber-600 p-3 rounded-xl shadow-lg"
+        >
+          <img 
+            src="/logo.png" 
+            alt="Refúgio's Lanche" 
+            className="h-20 w-auto"
+          />
+        </motion.div>
+        <span className="absolute left-full ml-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          Voltar ao Início
+        </span>
+      </Link>
+      
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text">Painel Administrativo</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-4xl font-bold gradient-text">Painel Administrativo</h1>
+            
+            {/* Indicador de novos pedidos */}
+            {newOrdersCount > 0 && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="relative"
+              >
+                <FaBell className="text-3xl text-orange-500 animate-bounce" />
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                  {newOrdersCount}
+                </span>
+              </motion.div>
+            )}
+          </div>
+          
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
@@ -432,15 +529,48 @@ const AdminDashboardPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2">URL da Imagem</label>
-                    <input
-                      type="text"
-                      value={productForm.image}
-                      onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                      placeholder="/images/produtos/produto.jpg"
-                      required
-                    />
+                    <label className="block text-sm font-semibold mb-2">Imagem do Produto</label>
+                    
+                    <div className="space-y-3">
+                      {/* Opção 1: Upload de arquivo */}
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Fazer upload da imagem:</label>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer"
+                        />
+                      </div>
+                      
+                      {/* Opção 2: URL da imagem */}
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Ou inserir URL da imagem:</label>
+                        <input
+                          type="text"
+                          value={productForm.image}
+                          onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                          placeholder="/images/produtos/produto.jpg ou https://..."
+                        />
+                      </div>
+                      
+                      {/* Preview da imagem */}
+                      {productForm.image && (
+                        <div className="mt-2">
+                          <label className="block text-xs text-gray-600 mb-1">Preview:</label>
+                          <img 
+                            src={productForm.image} 
+                            alt="Preview" 
+                            className="h-32 w-32 object-cover rounded-lg border-2 border-gray-300"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              toast.error('Erro ao carregar preview da imagem');
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div>
