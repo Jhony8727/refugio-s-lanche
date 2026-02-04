@@ -146,17 +146,54 @@ const OrderConfirmationPage = () => {
             </div>
           </div>
 
+          {/* Histórico de Status */}
+          {order.statusHistory && order.statusHistory.length > 0 && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h2 className="text-2xl font-bold mb-4">📋 Histórico de Atualizações</h2>
+              
+              <div className="space-y-3">
+                {order.statusHistory.slice().reverse().map((history, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div className={`w-3 h-3 rounded-full ${statusColors[history.status]}`}></div>
+                    <div className="flex-1">
+                      <p className="font-semibold">{statusText[history.status]}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(history.updatedAt).toLocaleString('pt-BR')}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <FaMapMarkerAlt className="text-primary" /> Endereço de Entrega
+              <FaMapMarkerAlt className="text-primary" /> 
+              {order.customer.address?.street ? 'Endereço de Entrega' : 'Forma de Recebimento'}
             </h2>
-            <p className="text-gray-700">
-              {order.customer.address.street}, {order.customer.address.number}
-              {order.customer.address.complement && ` - ${order.customer.address.complement}`}
-            </p>
-            <p className="text-gray-700">
-              {order.customer.address.neighborhood} - {order.customer.address.city}
-            </p>
+            
+            {order.customer.address?.street ? (
+              <>
+                <p className="text-gray-700">
+                  {order.customer.address.street}, {order.customer.address.number}
+                  {order.customer.address.complement && ` - ${order.customer.address.complement}`}
+                </p>
+                <p className="text-gray-700">
+                  {order.customer.address.neighborhood} - {order.customer.address.city}
+                </p>
+              </>
+            ) : (
+              <p className="text-gray-700 text-lg font-semibold">
+                🍽️ Retirar ou Consumir no Local
+              </p>
+            )}
             
             <h2 className="text-xl font-bold mt-6 mb-2 flex items-center gap-2">
               <FaPhone className="text-primary" /> Contato

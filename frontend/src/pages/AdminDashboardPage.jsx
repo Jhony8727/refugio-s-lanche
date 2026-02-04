@@ -208,7 +208,29 @@ const AdminDashboardPage = () => {
     }
   };
 
+  // Função para obter status disponíveis baseado no tipo de entrega
+  const getAvailableStatuses = (order) => {
+    const hasAddress = order.customer?.address?.street;
+    
+    if (!hasAddress) {
+      // Para pedidos locais (retirada/consumir no local), não mostrar "delivering"
+      return ['pending', 'confirmed', 'preparing', 'ready', 'delivered'];
+    }
+    
+    // Para pedidos com entrega, mostrar todos os status
+    return ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered'];
+  };
+  
   const statusOptions = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'delivered'];
+  
+  const statusLabels = {
+    pending: 'Pendente',
+    confirmed: 'Confirmado',
+    preparing: 'Preparando',
+    ready: 'Pronto',
+    delivering: 'Saiu para entrega',
+    delivered: 'Entregue'
+  };
   
   const statusColors = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -365,35 +387,52 @@ const AdminDashboardPage = () => {
                   <tr>
                     <th className="px-4 py-3 text-left">Pedido</th>
                     <th className="px-4 py-3 text-left">Cliente</th>
+                    <th className="px-4 py-3 text-left">Tipo</th>
                     <th className="px-4 py-3 text-left">Total</th>
                     <th className="px-4 py-3 text-left">Status</th>
                     <th className="px-4 py-3 text-left">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {orders.map((order) => (
-                    <tr key={order._id} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-4 font-bold">{order.orderNumber}</td>
-                      <td className="px-4 py-4">{order.customer.name}</td>
-                      <td className="px-4 py-4 font-semibold text-primary">R$ {order.total.toFixed(2)}</td>
-                      <td className="px-4 py-4">
-                        <span className={`px-3 py-1 rounded-full text-sm ${statusColors[order.orderStatus]}`}>
-                          {order.orderStatus}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <select
-                          value={order.orderStatus}
-                          onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                          className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
-                        >
-                          {statusOptions.map(status => (
-                            <option key={status} value={status}>{status}</option>
-                          ))}
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
+                  {orders.map((order) => {
+                    const hasAddress = order.customer?.address?.street;
+                    const availableStatuses = getAvailableStatuses(order);
+                    
+                    return (
+                      <tr key={order._id} className="border-b hover:bg-gray-50">
+                        <td className="px-4 py-4 font-bold">{order.orderNumber}</td>
+                        <td className="px-4 py-4">{order.customer.name}</td>
+                        <td className="px-4 py-4">
+                          {hasAddress ? (
+                            <span className="px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 flex items-center gap-1 w-fit">
+                              🚚 Entrega
+                            </span>
+                          ) : (
+                            <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 flex items-center gap-1 w-fit">
+                              🏪 Local
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-4 font-semibold text-primary">R$ {order.total.toFixed(2)}</td>
+                        <td className="px-4 py-4">
+                          <span className={`px-3 py-1 rounded-full text-sm ${statusColors[order.orderStatus]}`}>
+                            {statusLabels[order.orderStatus]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4">
+                          <select
+                            value={order.orderStatus}
+                            onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                            className="px-3 py-1 border border-gray-300 rounded-lg text-sm"
+                          >
+                            {availableStatuses.map(status => (
+                              <option key={status} value={status}>{statusLabels[status]}</option>
+                            ))}
+                          </select>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

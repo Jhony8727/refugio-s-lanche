@@ -272,7 +272,7 @@ const CheckoutPage = () => {
             >
               <h2 className="text-2xl font-bold mb-4 text-gray-800">Forma de Pagamento</h2>
               
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <button
                   type="button" onClick={() => setPaymentMethod('card')}
                   className={`p-4 border-2 rounded-lg transition-all ${
@@ -291,6 +291,17 @@ const CheckoutPage = () => {
                 >
                   <FaQrcode className="text-3xl mx-auto mb-2 text-primary" />
                   <p className="font-semibold">PIX</p>
+                </button>
+                
+                <button
+                  type="button" onClick={() => setPaymentMethod('test')}
+                  className={`p-4 border-2 rounded-lg transition-all ${
+                    paymentMethod === 'test' ? 'border-green-500 bg-green-50' : 'border-gray-300'
+                  }`}
+                >
+                  <div className="text-3xl mx-auto mb-2">🧪</div>
+                  <p className="font-semibold">TESTE</p>
+                  <p className="text-xs text-gray-500 mt-1">Pago automaticamente</p>
                 </button>
               </div>
             </motion.div>
