@@ -50,9 +50,15 @@ export const createOrder = async (req, res) => {
       });
     }
     
-    // Adicionar taxa de entrega
-    const deliveryFee = 5.00;
+    // Adicionar taxa de entrega e determinar tipo de entrega
+    const hasAddress = customer.address?.street;
+    const deliveryType = hasAddress ? 'delivery' : 'pickup';
+    const deliveryFee = hasAddress ? 5.00 : 0.00;
     total += deliveryFee;
+    
+    // Gerar número do pedido
+    const orderCount = await Order.countDocuments();
+    const orderNumber = `PED${String(orderCount + 1).padStart(6, '0')}`;
     
     // Calcular tempo estimado de entrega
     const estimatedDeliveryTime = new Date();
@@ -60,14 +66,16 @@ export const createOrder = async (req, res) => {
     
     // Criar pedido
     const order = await Order.create({
+      orderNumber,
       customer,
       items: orderItems,
       total,
       deliveryFee,
+      deliveryType,
       paymentMethod,
       notes,
       estimatedDeliveryTime,
-      paymentStatus: paymentMethod === 'cash' ? 'pending' : 'pending'
+      paymentStatus: paymentMethod === 'test' ? 'paid' : 'pending'
     });
     
     // Gerar QR Code
@@ -179,7 +187,20 @@ export const updateOrderStatus = async (req, res) => {
       });
     }
     
+    const oldStatus = order.orderStatus;
     order.orderStatus = status;
+    
+    // Adicionar ao histórico de status
+    if (!order.statusHistory) {
+      order.statusHistory = [];
+    }
+    
+    order.statusHistory.push({
+      status: status,
+      updatedAt: new Date(),
+      updatedBy: 'Admin',
+      notificationSent: false
+    });
     
     if (status === 'delivered') {
       order.deliveredAt = new Date();
@@ -187,10 +208,31 @@ export const updateOrderStatus = async (req, res) => {
     
     await order.save();
     
+    // Preparar mensagem de notificação
+    const statusMessages = {
+      pending: 'Seu pedido foi recebido e está aguardando confirmação.',
+      confirmed: 'Seu pedido foi confirmado e em breve começaremos a preparar!',
+      preparing: 'Estamos preparando seu pedido com todo carinho!',
+      ready: 'Seu pedido está pronto! Em breve sairá para entrega.',
+      delivering: 'Seu pedido saiu para entrega! Chegando em breve.',
+      delivered: 'Seu pedido foi entregue! Bom apetite! 🍔'
+    };
+    
+    const message = `🔔 Atualização do Pedido ${order.orderNumber}\n\n${statusMessages[status]}`;
+    
+    // Log da notificação (substitua por integração real)
+    console.log(`📧 Notificação para ${order.customer.phone}: ${message}`);
+    
+    // TODO: Integrar com serviço de mensagens
+    // await sendWhatsAppNotification(order.customer.phone, message);
+    // await sendSMSNotification(order.customer.phone, message);
+    // await sendEmailNotification(order.customer.email, message);
+    
     res.status(200).json({
       success: true,
       message: 'Status atualizado com sucesso',
-      data: order
+      data: order,
+      notification: message
     });
   } catch (error) {
     console.error('Erro ao atualizar status:', error);

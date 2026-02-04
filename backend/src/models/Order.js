@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
     },
     email: {
       type: String,
-      required: [true, 'Email é obrigatório'],
+      required: false,
       lowercase: true,
       trim: true
     },
@@ -56,9 +56,14 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     default: 5.00
   },
+  deliveryType: {
+    type: String,
+    enum: ['delivery', 'pickup', 'dine-in'],
+    default: 'delivery'
+  },
   paymentMethod: {
     type: String,
-    enum: ['card', 'pix', 'cash'],
+    enum: ['card', 'pix', 'cash', 'test'],
     required: true
   },
   paymentStatus: {
@@ -79,7 +84,13 @@ const orderSchema = new mongoose.Schema({
   deliveredAt: Date,
   cancelledAt: Date,
   cancellationReason: String,
-  notes: String
+  notes: String,
+  statusHistory: [{
+    status: String,
+    updatedAt: { type: Date, default: Date.now },
+    updatedBy: String,
+    notificationSent: { type: Boolean, default: false }
+  }]
 }, {
   timestamps: true
 });
