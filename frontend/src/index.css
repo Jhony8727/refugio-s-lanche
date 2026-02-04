@@ -85,3 +85,24 @@ body {
   background-size: 200% 200%;
   animation: gradient 3s ease infinite;
 }
+
+/* Scroll horizontal suave para mobile */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch manipulation para melhor UX mobile */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
