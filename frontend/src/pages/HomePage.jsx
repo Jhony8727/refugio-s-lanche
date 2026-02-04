@@ -74,8 +74,8 @@ const HomePage = () => {
       <Header showAdminIcon={true} />
       
       {/* Logo Sobreposto - Responsivo */}
-      <div className="relative">
-        <div className="absolute left-1/2 transform -translate-x-1/2 -top-12 sm:-top-20 md:-top-52 z-50 w-full max-w-[250px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-none px-4 sm:px-0">
+      <div className="relative -mt-4">
+        <div className="absolute left-1/2 transform -translate-x-1/2 -top-6 sm:-top-12 md:-top-32 z-50 w-full max-w-[250px] sm:max-w-[350px] md:max-w-[500px] lg:max-w-none px-4 sm:px-0">
           <img 
             src="/logo.png" 
             alt="Refugio's Lanche" 
@@ -86,7 +86,7 @@ const HomePage = () => {
       </div>
       
       {/* Hero Section Moderno - Responsivo */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 pt-[140px] sm:pt-[180px] md:pt-[300px] lg:pt-[420px] pb-6 md:pb-8">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-50 via-amber-50 to-orange-100 pt-[190px] sm:pt-[240px] md:pt-[370px] lg:pt-[490px] pb-6 md:pb-8 -mt-4">
         {/* Elementos decorativos flutuantes */}
         <motion.div
           className="absolute top-20 left-2 sm:left-10 text-4xl sm:text-6xl md:text-8xl opacity-20 md:opacity-30"
@@ -248,14 +248,14 @@ const HomePage = () => {
       </section>
 
       {/* Seção de Categorias Modernas */}
-      <section className="bg-white pt-8 pb-16 min-h-screen">
+      <section className="bg-white pt-2 pb-16 min-h-screen">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-8 md:mb-14 px-4"
+            className="text-center mb-6 md:mb-10 px-4"
           >
             <motion.div
               initial={{ scale: 0.9 }}
