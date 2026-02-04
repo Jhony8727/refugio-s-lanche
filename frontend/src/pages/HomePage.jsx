@@ -342,7 +342,9 @@ const HomePage = () => {
               <p className="text-xl text-gray-500">Tente outra categoria deliciosa!</p>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16 min-h-[400px]">
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-16 min-h-[400px] ${
+              filteredProducts.length <= 2 ? 'justify-items-center md:flex md:justify-center md:gap-8' : ''
+            }`}>
               {filteredProducts.map((product) => (
                 <motion.div
                   key={product._id}
@@ -350,6 +352,7 @@ const HomePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   whileHover={{ y: -10 }}
                   transition={{ duration: 0.3 }}
+                  className={filteredProducts.length <= 2 ? 'w-full max-w-sm' : ''}
                 >
                   <ProductCard product={product} />
                 </motion.div>
